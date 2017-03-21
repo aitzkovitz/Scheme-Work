@@ -1,0 +1,84 @@
+#lang racket
+; by Aaron Itzkovitz
+
+; function to calculate volume of sphere
+; returns 0 if radius is 0 or negative
+(define (sphereVolume r)
+  (if ( or (= r 0) (< r 0)) 0 ( * (/ 4 3) 3.14 r r r))
+  )
+
+; recursive power function
+(define (power A B)
+  (cond
+    [( = A 0) 0]     				; if base = 0, return 0
+    [( = A 1) 1]     				; if base = 1, return 1
+    [( = B 0) 1]    			 	; if exponent = 0, return 1
+    [( = B 1) A]     				; if exp. = 1, return base
+    [( < B 0) (/ 1 (power A (* B -1)))]    	; if exponent is negative, return 1 / a^-b
+    [else (* A (power A (- B 1)))]          	; recurse until the base case
+    )
+  )
+
+; function to count the number of zeros in a simple list
+(define (countZero list)
+  (cond
+    [(null? list) 0]       					; if the list is null, return 0
+    [( = (car list) 0) (+ (countZero (cdr list)) 1 )]     	; if the first atom is 0, recurse and add 1
+    [( not ( = (car list) 0)) (countZero (cdr list))]     	; if the first atom doesn't = 0, recurse
+    )
+  )
+
+; function to return the reversed version of a simple list
+(define (reverse list)
+  (cond
+    [(null? (cdr list)) list]     				; if there is only 1 atom, return it
+    [else (append (reverse (cdr list)) (list (car list)))]  	; else, append the
+                                                            	; recursive call to the first atom in list
+    )
+  )
+
+; function to return maximum
+(define (maximum list)
+     (if (null? (cdr list))     			; if there is only one element in list, return it
+         (car list) 
+         (if (< (car list) (maximum (cdr list)))    	; else, either recurse or return the first atom 
+             (maximum (cdr list)) 
+             (car list)
+         )
+    )
+)
+
+; function to find minimum
+(define (minimum list)
+     (if (null? (cdr list))     			; if there is only one element in list, return it
+         (car list)    	
+         (if (> (car list) (minimum (cdr list)))    	; else, either recurse or return the first atom 
+             (minimum (cdr list)) 
+             (car list)
+         )
+    )
+)
+
+; function to return the min and max
+(define (findEnds list)
+  (values (maximum list) (minimum list))
+  )
+
+; function to replace all occurrences of atom1 with atom2 in given list
+; if l1 is null, return l1
+; if the first item in l1 is a list, construct a pair by recursively calling the function
+;   on the first list and on the remainder of the list
+; if we found a match to atom1, replace it by constructing a pair with atom2 and the result
+;   of the recursive call to the remainder of the list
+; else, construct a pair with the first atom and the result of recursively calling the
+;  function on the remainder of the list
+
+(define (replace atom1 atom2 list)
+ (cond
+  [(null? list) '()]
+  [(list? (car list)) (cons (replace atom1 atom2 (car list)) (replace atom1 atom2 (cdr list)))]
+  [(= (car list) atom1) (cons atom2 (replace atom1 atom2 (cdr list)))]
+  [else
+   (cons (car list) (replace atom1 atom2 (cdr list)))]
+  )
+ )
